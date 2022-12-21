@@ -191,3 +191,55 @@ func (jt *JobTemplateService) AssociateCredentials(id int, data map[string]inter
 
 	return result, nil
 }
+
+// Survey is attached to a job template, the id here is the job_template ID
+func (jt *JobTemplateService) PostSurvey(id int, data Survey, params map[string]string) (*Survey, error) {
+	result := new(Survey)
+	endpoint := fmt.Sprintf("%s%d/survey_spec/", jobTemplateAPIEndpoint, id)
+	payload, err := json.Marshal(data)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := jt.client.Requester.PostJSON(endpoint, bytes.NewReader(payload), result, params)
+	if err != nil {
+		return nil, err
+	}
+	if err := CheckResponse(resp); err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+// the survey is attached to a job template, so we query the entire survey of a job template by its ID
+func (jt *JobTemplateService) GetSurveyByJobTemplateId(id int, params map[string]string) (*Survey, error) {
+	result := new(Survey)
+	endpoint := fmt.Sprintf("%s%d/survey_spec/", jobTemplateAPIEndpoint, id)
+	resp, err := jt.client.Requester.GetJSON(endpoint, result, params)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := CheckResponse(resp); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+// Delete the whole survey. AWX doesn't really have delete individual survey question, but re-POST everytime there is a change
+func (jt *JobTemplateService) DeleteSurvey(id int) (*Survey, error) {
+	result := new(Survey)
+	endpoint := fmt.Sprintf("%s%d/survey_spec", jobTemplateAPIEndpoint, id)
+
+	resp, err := jt.client.Requester.Delete(endpoint, result, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := CheckResponse(resp); err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}

@@ -785,3 +785,22 @@ type WorkflowJobTemplateNode struct {
 	AllParentsMustConverge bool      `json:"all_parents_must_converge"`
 	Identifier             string    `json:"identifier"`
 }
+
+// for surveys spec
+type SurveySpec struct {
+	QuestionName        string   `json:"question_name" mapstructure:"question_name"`
+	QuestionDescription string   `json:"question_description" mapstructure:"question_description"`
+	Required            bool     `json:"required" mapstructure:"required"`
+	Type                string   `json:"type" mapstructure:"type"`
+	Variable            string   `json:"variable" mapstructure:"variable"`
+	Min                 int      `json:"min,omitempty" mapstructure:"min"`
+	Max                 int      `json:"max" mapstructure:"max,omitempty"`
+	Default             string   `json:"default,omitempty" mapstructure:"default"`
+	Choices             string   `json:"choices,omitempty" mapstructure:"choices"`
+}
+
+type Survey struct {
+	Name        string       `json:"name"`
+	Description string       `json:"description"`
+	Spec        []SurveySpec `json:"spec"`
+}
