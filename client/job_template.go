@@ -192,6 +192,24 @@ func (jt *JobTemplateService) AssociateCredentials(id int, data map[string]inter
 	return result, nil
 }
 
+func (jt *JobTemplateService) ListCredentials(id int, params map[string]string) ([]*Credential,
+	*ListCredentialsResponse,
+	error) {
+	result := new(ListCredentialsResponse)
+	endpoint := fmt.Sprintf("%s%d/credentials/", jobTemplateAPIEndpoint, id)
+	resp, err := jt.client.Requester.GetJSON(endpoint, result, params)
+	if err != nil {
+		return nil, result, err
+	}
+
+	err = CheckResponse(resp)
+	if err != nil {
+		return nil, result, err
+	}
+
+	return result.Results, result, nil
+}
+
 // Survey is attached to a job template, the id here is the job_template ID
 func (jt *JobTemplateService) PostSurvey(id int, data Survey, params map[string]string) (*Survey, error) {
 	result := new(Survey)
