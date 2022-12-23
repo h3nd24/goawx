@@ -768,21 +768,21 @@ type WorkflowJobTemplateNode struct {
 	SummaryFields          *Summary  `json:"summary_fields"`
 	Created                time.Time `json:"created"`
 	Modified               time.Time `json:"modified"`
-	ExtraData              string    `json:"extra_data"`
-	Inventory              int       `json:"inventory"`
-	ScmBranch              string    `json:"scm_branch"`
-	JobType                string    `json:"job_type"`
-	JobTags                string    `json:"job_tags"`
-	SkipTags               string    `json:"skip_tags"`
-	Limit                  string    `json:"limit"`
-	DiffMode               string    `json:"diff_mode"`
-	Verbosity              int       `json:"verbosity"`
-	WorkflowJobTemplate    int       `json:"workflow_job_template"`
-	UnifiedJobTemplate     int       `json:"unified_job_template"`
-	SuccessNodes           []int     `json:"success_nodes"`
+	ExtraData              string    `json:"extra_data" mapstructure:"extra_data"`
+	Inventory              int       `json:"inventory" mapstructure:"inventory_id"`
+	ScmBranch              string    `json:"scm_branch" mapstructure:"scm_branch"`
+	JobType                string    `json:"job_type" mapstructure:"job_type"`
+	JobTags                string    `json:"job_tags" mapstructure:"job_tags"`
+	SkipTags               string    `json:"skip_tags" mapstructure:"skip_tags"`
+	Limit                  string    `json:"limit" mapstructure:"limit"`
+	DiffMode               string    `json:"diff_mode" mapstructure:"diff_mode"`
+	Verbosity              int       `json:"verbosity" mapstructure:"verbosity"`
+	WorkflowJobTemplate    int       `json:"workflow_job_template" mapstructure:"workflow_job_template_id"`
+	UnifiedJobTemplate     int       `json:"unified_job_template" mapstructure:"unified_job_template_id"`
+	SuccessNodes           []int     `json:"success_nodes" `
 	FailureNodes           []int     `json:"failure_nodes"`
 	AlwaysNodes            []int     `json:"always_nodes"`
-	AllParentsMustConverge bool      `json:"all_parents_must_converge"`
+	AllParentsMustConverge bool      `json:"all_parents_must_converge" mapstructure:"all_parents_must_converge"`
 	Identifier             string    `json:"identifier"`
 }
 

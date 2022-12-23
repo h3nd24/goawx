@@ -109,3 +109,92 @@ func (jt *WorkflowJobTemplateNodeService) DeleteWorkflowJobTemplateNode(id int) 
 
 	return result, nil
 }
+
+func ValidateLinkType(linkType string) error {
+	if linkType != "always_nodes" && linkType != "success_nodes" && linkType != "failure_nodes" {
+		return fmt.Errorf("Currently the valid values for workflow job template node link type is [always_nodes, success_nodes, failure_nodes]")
+	}
+	return nil 
+}
+
+func (jt *WorkflowJobTemplateNodeService) AssociateWorkflowJobTemplateNodes(id int, linkType string, data map[string]interface{}, params map[string]string) (*WorkflowJobTemplateNode, error) {
+	err := ValidateLinkType(linkType)
+	if err != nil {
+		return nil, err
+	}
+
+	result := new(WorkflowJobTemplateNode)
+	mandatoryFields = []string{"id"}
+	validate, status := ValidateParams(data, mandatoryFields)
+	data["associate"] = true
+	if !status {
+		err := fmt.Errorf("Mandatory input arguments are absent: %s", validate)
+		return nil, err
+	}
+
+	endpoint := fmt.Sprintf("%s%d/%s/", workflowJobTemplateNodeAPIEndpoint, id, linkType)
+	payload, err := json.Marshal(data)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := jt.client.Requester.PostJSON(endpoint, bytes.NewReader(payload), result, params)
+	if err != nil {
+		return nil, err
+	}
+	if err := CheckResponse(resp); err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func (jt *WorkflowJobTemplateNodeService) DisAssociateWorkflowJobTemplateNodes(id int, linkType string, data map[string]interface{}, params map[string]string) (*WorkflowJobTemplateNode, error) {
+	err := ValidateLinkType(linkType)
+	if err != nil {
+		return nil, err
+	}
+
+	result := new(WorkflowJobTemplateNode)
+	mandatoryFields = []string{"id"}
+	validate, status := ValidateParams(data, mandatoryFields)
+	if !status {
+		err := fmt.Errorf("Mandatory input arguments are absent: %s", validate)
+		return nil, err
+	}
+	data["disassociate"] = true
+	endpoint := fmt.Sprintf("%s%d/%s", workflowJobTemplateNodeAPIEndpoint, id, linkType)
+	payload, err := json.Marshal(data)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := jt.client.Requester.PostJSON(endpoint, bytes.NewReader(payload), result, params)
+	if err != nil {
+		return nil, err
+	}
+	if err := CheckResponse(resp); err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func (jt *WorkflowJobTemplateNodeService) ListAssociatedWorkflowJobTemplateNodes(id int, linkType string, params map[string]string) ([]*WorkflowJobTemplateNode, *ListWorkflowJobTemplateNodesResponse, error) {
+	result := new(ListWorkflowJobTemplateNodesResponse)
+	err := ValidateLinkType(linkType)
+	if err != nil {
+		return nil, result, err
+	}
+
+	endpoint := fmt.Sprintf("%s%d/%s", workflowJobTemplateNodeAPIEndpoint, id, linkType)
+	resp, err := jt.client.Requester.GetJSON(endpoint, result, params)
+	if err != nil {
+		return nil, result, err
+	}
+
+	if err := CheckResponse(resp); err != nil {
+		return nil, result, err
+	}
+
+	return result.Results, result, nil
+}
+
